@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Subtrack – Register</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/tabler-icons.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <style>
+    .app-shell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .sidebar, .topbar {
+      display: none;
+    }
+    .auth-card {
+      background: var(--mc-700);
+      border: 1px solid var(--mc-500);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      width: 100%;
+      max-width: 400px;
+      margin: 20px;
+    }
+    .auth-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      color: var(--mc-30);
+      margin-bottom: 8px;
+    }
+    .auth-sub {
+      font-size: 13px;
+      color: var(--mc-200);
+      margin-bottom: 24px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--mc-80);
+      margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%;
+      background: var(--mc-800);
+      border: 1px solid var(--mc-500);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--mc-40);
+      outline: none;
+    }
+    .form-group input:focus {
+      border-color: var(--mc-80);
+    }
+    .btn-auth {
+      width: 100%;
+      background: var(--mc-50);
+      color: var(--mc-800);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn-auth:hover {
+      background: var(--mc-40);
+    }
+    .auth-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--mc-200);
+    }
+    .auth-footer a {
+      color: var(--mc-50);
+      text-decoration: none;
+    }
+    .error-msg {
+      color: #e06c75;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .success-msg {
+      color: #98c379;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="auth-card">
+    <div class="auth-title">Create account</div>
+    <div class="auth-sub">Start tracking your subscriptions</div>
+
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="regUsername" placeholder="e.g. alexchen" />
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="regPassword" placeholder="At least 3 characters" />
+    </div>
+
+    <div class="form-group">
+      <label>Confirm password</label>
+      <input type="password" id="regConfirm" placeholder="Enter password again" />
+    </div>
+
+    <button class="btn-auth" id="registerBtn">Register</button>
+
+    <div class="auth-footer">
+      Already have an account? <a href="login.html">Sign in</a>
+    </div>
+    <div id="regMessage"></div>
+  </div>
+</div>
+
+<script>
+  const registerBtn = document.getElementById('registerBtn');
+  const msgDiv = document.getElementById('regMessage');
+
+  registerBtn.addEventListener('click', function() {
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const confirm = document.getElementById('regConfirm').value;
+
+    if (!username || !password) {
+      msgDiv.innerHTML = '<div class="error-msg">❌ Username and password required</div>';
+      return;
+    }
+    if (password !== confirm) {
+      msgDiv.innerHTML = '<div class="error-msg">❌ Passwords do not match</div>';
+      return;
+    }
+    if (password.length < 3) {
+      msgDiv.innerHTML = '<div class="error-msg">❌ Password must be at least 3 characters</div>';
+      return;
+    }
+
+    let users = JSON.parse(localStorage.getItem('subtrack_users')) || [];
+    if (users.find(u => u.username === username)) {
+      msgDiv.innerHTML = '<div class="error-msg">❌ Username already exists</div>';
+      return;
+    }
+
+    users.push({ username: username, password: password });
+    localStorage.setItem('subtrack_users', JSON.stringify(users));
+
+    msgDiv.innerHTML = '<div class="success-msg">✅ Registration successful! <a href="login.html">Login now</a></div>';
+  });
+</script>
+</body>
+</html>
