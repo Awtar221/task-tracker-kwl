@@ -90,15 +90,19 @@
 
 .field-input {
   background: var(--mc-800);
-  border: 1px solid var(--mc-500);
+  border: 2px solid var(--mc-500); 
   border-radius: var(--radius-md);
   padding: 9px 12px;
   font-size: 13.5px;
   color: var(--mc-40);
   outline: none;
   width: 100%;
-  transition: border-color var(--transition-fast);
-  appearance: none;
+  transition: all 0.2s ease;
+}
+
+.field-input:focus {
+  border-color: var(--mc-80);
+  box-shadow: 0 0 0 2px rgba(253, 180, 121, 0.2);
 }
 
 .field-input::placeholder {
