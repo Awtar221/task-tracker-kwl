@@ -11,6 +11,210 @@
   <link rel="stylesheet" href="../css/layout.css" />
   <link rel="stylesheet" href="../css/components.css" />
   <link rel="stylesheet" href="../css/modal.css" />
+  
+  <style>
+    /* Dropdown menu hover effect */
+    #dropdownMenu a:hover {
+      background: rgba(253, 180, 121, 0.1);
+    }
+    
+    #dropdownMenu hr {
+      margin: 4px 0;
+      border: none;
+      border-top: 1px solid var(--mc-500);
+    }
+
+    /* 三个点菜单按钮悬停效果 */
+    .status-menu-btn:hover {
+      background: #333333 !important;
+      border-color: #888888 !important;
+      transform: scale(1.05);
+      transition: all 0.2s ease;
+    }
+    
+    .status-menu-btn {
+      transition: all 0.2s ease;
+    }
+    
+    /* 弹出菜单项悬停效果 */
+    .status-popup-menu .menu-item:hover {
+      background: rgba(253, 180, 121, 0.1);
+    }
+
+    /* 自定义通知样式 */
+    .custom-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 14px 20px;
+      border-radius: 12px;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 10000;
+      animation: slideInRight 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+      max-width: 350px;
+    }
+    
+    .custom-toast.success {
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-left: 4px solid #34d399;
+    }
+    
+    .custom-toast.error {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border-left: 4px solid #f87171;
+    }
+    
+    .custom-toast i {
+      font-size: 20px;
+    }
+    
+    .custom-toast .toast-close {
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    
+    .custom-toast .toast-close:hover {
+      opacity: 1;
+    }
+    
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+    
+    /* 删除确认对话框样式 */
+    .custom-dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10001;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    .custom-dialog {
+      background: var(--mc-700);
+      border: 1px solid var(--mc-500);
+      border-radius: 16px;
+      width: 400px;
+      max-width: 90%;
+      padding: 24px;
+      animation: scaleIn 0.2s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    
+    .custom-dialog-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .custom-dialog-header i {
+      font-size: 28px;
+      color: #ef4444;
+    }
+    
+    .custom-dialog-header h3 {
+      font-size: 18px;
+      color: var(--mc-30);
+      margin: 0;
+    }
+    
+    .custom-dialog-body {
+      color: var(--mc-80);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    
+    .custom-dialog-body .subscription-name {
+      color: var(--mc-40);
+      font-weight: bold;
+    }
+    
+    .custom-dialog-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    
+    .custom-dialog-footer button {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .dialog-cancel {
+      background: transparent;
+      border: 1px solid var(--mc-500);
+      color: var(--mc-80);
+    }
+    
+    .dialog-cancel:hover {
+      background: rgba(253, 180, 121, 0.1);
+      border-color: var(--mc-80);
+    }
+    
+    .dialog-confirm {
+      background: #ef4444;
+      border: none;
+      color: white;
+    }
+    
+    .dialog-confirm:hover {
+      background: #dc2626;
+      transform: scale(1.02);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.95);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -38,22 +242,6 @@
       </a>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Filters</div>
-      <a href="#" class="nav-item">
-        <i class="ti ti-circle-check"></i>
-        <span>Active</span>
-      </a>
-      <a href="#" class="nav-item">
-        <i class="ti ti-circle-x"></i>
-        <span>Cancelled</span>
-      </a>
-      <a href="#" class="nav-item">
-        <i class="ti ti-clock"></i>
-        <span>Renewing Soon</span>
-      </a>
-    </div>
-
     <div class="sidebar-footer">
       <div class="user-pill">
         <div class="avatar">AW</div>
@@ -70,161 +258,207 @@
     <header class="topbar">
       <h1 class="page-title">My Subscriptions</h1>
       <div class="topbar-actions">
-        <div class="search-box">
-          <i class="ti ti-search"></i>
-          <span>Search subscriptions...</span>
-        </div>
-        <div class="view-toggle">
-          <button class="vbtn active" title="List view"><i class="ti ti-list"></i></button>
-          <button class="vbtn" title="Grid view"><i class="ti ti-layout-grid"></i></button>
-        </div>
         <button class="btn-add" id="openModalBtn">
           <i class="ti ti-plus"></i>
           Add Subscription
         </button>
+        
+        <!-- three dots menu -->
+        <div class="menu-dropdown" style="position: relative;">
+          <button class="icon-btn" id="menuBtn" style="width: 36px; height: 36px; background: var(--mc-700); border: 1px solid var(--mc-500); border-radius: var(--radius-md);">
+            <i class="ti ti-dots-vertical"></i>
+          </button>
+          
+          <div id="dropdownMenu" style="display: none; position: absolute; right: 0; top: 45px; background: var(--mc-700); border: 1px solid var(--mc-500); border-radius: var(--radius-md); min-width: 160px; z-index: 100; overflow: hidden;">
+            <a href="#" id="exportDataBtn" style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: var(--mc-40); text-decoration: none; font-size: 13px;">
+              <i class="ti ti-download"></i>
+              <span>Export Data</span>
+            </a>
+            <a href="#" id="importDataBtn" style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: var(--mc-40); text-decoration: none; font-size: 13px;">
+              <i class="ti ti-upload"></i>
+              <span>Import Data</span>
+            </a>
+            <hr style="margin: 4px 0; border-color: var(--mc-500);">
+            <a href="#" id="clearAllBtn" style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #ef4444; text-decoration: none; font-size: 13px;">
+              <i class="ti ti-trash"></i>
+              <span>Clear All Data</span>
+            </a>
+          </div>
+        </div>
       </div>
     </header>
 
     <div class="content">
       <div class="section-header">
         <div class="section-title">All Subscriptions</div>
-        <div class="filter-tabs">
-          <div class="tab active">All</div>
-          <div class="tab">Active</div>
-          <div class="tab">Cancelled</div>
-        </div>
       </div>
 
-      <div class="sub-table">
-        <div class="table-head">
-          <div class="th">Service</div>
-          <div class="th">Cost / mo</div>
-          <div class="th">Renewal Date</div>
-          <div class="th">Status</div>
-          <div class="th"></div>
-        </div>
-
-        <div class="table-row">
-          <div class="sub-name-wrap">
-            <div class="sub-icon"><i class="ti ti-device-tv"></i></div>
-            <div>
-              <div class="sub-name">Netflix</div>
-              <div class="sub-category">Streaming</div>
-            </div>
-          </div>
-          <div class="td">RM 54.90</div>
-          <div class="td">1 Jun 2025</div>
-          <div class="td"><span class="badge badge-active"><span class="badge-dot"></span>Active</span></div>
-          <div class="row-actions">
-            <button class="icon-btn" title="Edit"><i class="ti ti-edit"></i></button>
-            <button class="icon-btn" title="Delete"><i class="ti ti-trash"></i></button>
-          </div>
-        </div>
-
-        <div class="table-row">
-          <div class="sub-name-wrap">
-            <div class="sub-icon"><i class="ti ti-music"></i></div>
-            <div>
-              <div class="sub-name">Spotify</div>
-              <div class="sub-category">Music</div>
-            </div>
-          </div>
-          <div class="td">RM 17.90</div>
-          <div class="td">15 Jun 2025</div>
-          <div class="td"><span class="badge badge-active"><span class="badge-dot"></span>Active</span></div>
-          <div class="row-actions">
-            <button class="icon-btn" title="Edit"><i class="ti ti-edit"></i></button>
-            <button class="icon-btn" title="Delete"><i class="ti ti-trash"></i></button>
-          </div>
-        </div>
-
-        <div class="table-row">
-          <div class="sub-name-wrap">
-            <div class="sub-icon"><i class="ti ti-cloud"></i></div>
-            <div>
-              <div class="sub-name">iCloud 200GB</div>
-              <div class="sub-category">Storage</div>
-            </div>
-          </div>
-          <div class="td">RM 5.90</div>
-          <div class="td">22 Jun 2025</div>
-          <div class="td"><span class="badge badge-cancelled"><span class="badge-dot"></span>Cancelled</span></div>
-          <div class="row-actions">
-            <button class="icon-btn" title="Edit"><i class="ti ti-edit"></i></button>
-            <button class="icon-btn" title="Delete"><i class="ti ti-trash"></i></button>
-          </div>
-        </div>
-
-        <div class="table-row">
-          <div class="sub-name-wrap">
-            <div class="sub-icon"><i class="ti ti-brand-adobe"></i></div>
-            <div>
-              <div class="sub-name">Adobe CC</div>
-              <div class="sub-category">Design</div>
-            </div>
-          </div>
-          <div class="td">RM 109.00</div>
-          <div class="td">30 Jun 2025</div>
-          <div class="td"><span class="badge badge-active"><span class="badge-dot"></span>Active</span></div>
-          <div class="row-actions">
-            <button class="icon-btn" title="Edit"><i class="ti ti-edit"></i></button>
-            <button class="icon-btn" title="Delete"><i class="ti ti-trash"></i></button>
-          </div>
-        </div>
-      </div>
+      <div class="sub-table" id="subscriptionsTable"></div>
     </div>
   </main>
 </div>
 
-<!-- ADD SUBSCRIPTION MODAL -->
+<!-- Add/Edit Subscription Modal -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">Add Subscription</div>
+      <div class="modal-title" id="modalTitle">Add Subscription</div>
       <button class="close-btn" id="closeModalBtn"><i class="ti ti-x"></i></button>
     </div>
 
-    <div class="form-field">
-      <label class="field-label" for="sub-name">Service name</label>
-      <input class="field-input" id="sub-name" type="text" placeholder="e.g. Netflix, Spotify..." />
-    </div>
-
-    <div class="form-field">
-      <label class="field-label" for="sub-cat">Category</label>
-      <select class="field-input" id="sub-cat">
-        <option value="" disabled selected>Select a category</option>
-        <option>Streaming</option>
-        <option>Music</option>
-        <option>Storage</option>
-        <option>Design</option>
-        <option>Productivity</option>
-        <option>Other</option>
-      </select>
-    </div>
-
-    <div class="field-row">
+    <form id="subscriptionForm">
+      <input type="hidden" id="editId" value="">
+      
       <div class="form-field">
-        <label class="field-label" for="sub-cost">Monthly cost (RM)</label>
-        <input class="field-input" id="sub-cost" type="number" placeholder="0.00" />
+        <label class="field-label" for="sub-name">Service name</label>
+        <input class="field-input" id="sub-name" type="text" placeholder="e.g. Netflix, Spotify..." required />
       </div>
+
       <div class="form-field">
-        <label class="field-label" for="sub-date">Renewal date</label>
-        <input class="field-input" id="sub-date" type="date" />
+        <label class="field-label" for="sub-cat">Category</label>
+        <select class="field-input" id="sub-cat" required>
+          <option value="" disabled selected>Select a category</option>
+          <option>Streaming</option>
+          <option>Music</option>
+          <option>Storage</option>
+          <option>Design</option>
+          <option>Productivity</option>
+          <option>Other</option>
+        </select>
       </div>
-    </div>
 
-    <div class="form-field">
-      <label class="field-label" for="sub-notes">Notes (optional)</label>
-      <input class="field-input" id="sub-notes" type="text" placeholder="Any notes..." />
-    </div>
+      <div class="field-row">
+        <div class="form-field">
+          <label class="field-label" for="sub-cost">Monthly cost (RM)</label>
+          <input class="field-input" id="sub-cost" type="number" step="0.01" placeholder="0.00" required />
+        </div>
+        <div class="form-field">
+          <label class="field-label" for="sub-date">Renewal date</label>
+          <input class="field-input" id="sub-date" type="date" required />
+        </div>
+      </div>
 
-    <div class="modal-footer">
-      <button class="btn-secondary" id="cancelModalBtn">Cancel</button>
-      <button class="btn-primary">Add Subscription</button>
-    </div>
+      <div class="form-field">
+        <label class="field-label" for="sub-status">Status</label>
+        <select class="field-input" id="sub-status">
+          <option value="active">Active</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label class="field-label" for="sub-notes">Notes (optional)</label>
+        <input class="field-input" id="sub-notes" type="text" placeholder="Any notes..." />
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="cancelModalBtn">Cancel</button>
+        <button type="submit" class="btn-primary" id="saveBtn">Add Subscription</button>
+      </div>
+    </form>
   </div>
 </div>
 
-<script src="../js/modal.js"></script>
+<script>
+  // Dropdown menu functionality
+  (function() {
+    const menuBtn = document.getElementById('menuBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    let isMenuOpen = false;
+    
+    if (menuBtn) {
+      menuBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        isMenuOpen = !isMenuOpen;
+        dropdownMenu.style.display = isMenuOpen ? 'block' : 'none';
+      });
+    }
+    
+    document.addEventListener('click', function(e) {
+      if (!menuBtn || !menuBtn.contains(e.target)) {
+        dropdownMenu.style.display = 'none';
+        isMenuOpen = false;
+      }
+    });
+    
+    const exportBtn = document.getElementById('exportDataBtn');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const subscriptions = localStorage.getItem('subscriptions');
+        if (subscriptions) {
+          const blob = new Blob([subscriptions], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `subscriptions_backup_${new Date().toISOString().split('T')[0]}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+          if (window.subscriptionManager) {
+            window.subscriptionManager.showToast('Data exported successfully!', 'success');
+          } else {
+            alert('Data exported successfully!');
+          }
+        } else {
+          alert('No data to export.');
+        }
+        dropdownMenu.style.display = 'none';
+        isMenuOpen = false;
+      });
+    }
+    
+    const importBtn = document.getElementById('importDataBtn');
+    if (importBtn) {
+      importBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json';
+        input.onchange = function(event) {
+          const file = event.target.files[0];
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            try {
+              const data = JSON.parse(e.target.result);
+              localStorage.setItem('subscriptions', JSON.stringify(data));
+              if (window.subscriptionManager) {
+                window.subscriptionManager.showToast('Data imported successfully! Refreshing...', 'success');
+              } else {
+                alert('Data imported successfully!');
+              }
+              setTimeout(() => window.location.reload(), 1500);
+            } catch (err) {
+              alert('Invalid file format. Please select a valid backup file.');
+            }
+          };
+          reader.readAsText(file);
+        };
+        input.click();
+        dropdownMenu.style.display = 'none';
+        isMenuOpen = false;
+      });
+    }
+    
+    const clearBtn = document.getElementById('clearAllBtn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to delete ALL subscriptions? This action cannot be undone!')) {
+          localStorage.removeItem('subscriptions');
+          if (window.subscriptionManager) {
+            window.subscriptionManager.showToast('All data cleared! Refreshing...', 'warning');
+          } else {
+            alert('All data cleared!');
+          }
+          setTimeout(() => window.location.reload(), 1500);
+        }
+        dropdownMenu.style.display = 'none';
+        isMenuOpen = false;
+      });
+    }
+  })();
+</script>
+
+<script src="../js/simple_CRUD.js"></script>
 </body>
-</html>
+</html> 
