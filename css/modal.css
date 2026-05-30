@@ -1,9 +1,10 @@
 /* ======================
    MODAL.CSS
-   Overlay, modal window, form fields
+   Overlay backdrop, modal window, form fields, and modal buttons.
+   Used by the Add / Edit Subscription modal on every page.
    ====================== */
 
-/* --- Overlay --- */
+/* --- Backdrop overlay --- */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -13,6 +14,8 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
+
+  /* Hidden by default; toggled with .is-open */
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
@@ -23,7 +26,7 @@
   pointer-events: all;
 }
 
-/* --- Modal window --- */
+/* --- Modal panel --- */
 .modal {
   background: var(--mc-700);
   border: 1px solid var(--mc-500);
@@ -31,6 +34,8 @@
   width: 460px;
   max-width: calc(100vw - 40px);
   padding: 28px;
+
+  /* Slide-up entrance animation */
   transform: translateY(12px);
   transition: transform 0.2s ease;
 }
@@ -39,7 +44,7 @@
   transform: translateY(0);
 }
 
-/* --- Modal header --- */
+/* --- Modal header: title + close button --- */
 .modal-header {
   display: flex;
   align-items: center;
@@ -73,7 +78,7 @@
   color: var(--mc-40);
 }
 
-/* --- Form fields --- */
+/* --- Form field: label + input stacked --- */
 .form-field {
   display: flex;
   flex-direction: column;
@@ -88,21 +93,18 @@
   letter-spacing: 0.4px;
 }
 
+/* Shared styles for input, select, textarea */
 .field-input {
   background: var(--mc-800);
-  border: 2px solid var(--mc-500); 
+  border: 2px solid var(--mc-500);
   border-radius: var(--radius-md);
   padding: 9px 12px;
   font-size: 13.5px;
   color: var(--mc-40);
   outline: none;
   width: 100%;
-  transition: all 0.2s ease;
-}
-
-.field-input:focus {
-  border-color: var(--mc-80);
-  box-shadow: 0 0 0 2px rgba(253, 180, 121, 0.2);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  appearance: none;
 }
 
 .field-input::placeholder {
@@ -111,21 +113,23 @@
 
 .field-input:focus {
   border-color: var(--mc-80);
+  box-shadow: 0 0 0 2px rgba(253, 180, 121, 0.2);
 }
 
+/* Style native select options to match dark theme */
 .field-input option {
   background: var(--mc-700);
   color: var(--mc-40);
 }
 
-/* --- Two-column field row --- */
+/* --- Two-column layout for paired fields (cost + date) --- */
 .field-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 
-/* --- Modal footer --- */
+/* --- Modal footer: action buttons --- */
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -135,6 +139,7 @@
   border-top: 1px solid var(--mc-500);
 }
 
+/* Ghost/secondary button */
 .btn-secondary {
   padding: 9px 18px;
   border-radius: var(--radius-md);
@@ -151,6 +156,7 @@
   border-color: var(--mc-80);
 }
 
+/* Filled primary button */
 .btn-primary {
   padding: 9px 18px;
   border-radius: var(--radius-md);
