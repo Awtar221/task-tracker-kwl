@@ -1,12 +1,21 @@
-// simple_CRUD.js - 完整修复版
+/* ======================
+   simple_CRUD.js
+   SubscriptionManager class — full CRUD for subscriptions.
+   Reads/writes to localStorage under the key 'subscriptions'.
+   Renders the subscription table and stat cards dynamically.
+
+   Loaded by: index.html, pages/subscriptions.html
+   ====================== */
 
 class SubscriptionManager {
   constructor() {
-    this.subscriptions = [];
-    this.currentFilter = 'all';
-    this.searchTerm = '';
+    this.subscriptions = [];   // In-memory list (synced with localStorage)
+    this.currentFilter = 'all'; // Active filter: 'all' | 'active' | 'cancelled' | 'renewing-soon'
+    this.searchTerm    = '';    // Current search string
     this.init();
   }
+
+  /* ===== INIT ===== */
 
   init() {
     this.loadData();
@@ -15,426 +24,340 @@ class SubscriptionManager {
     this.updateStats();
   }
 
+  /* ===== DATA PERSISTENCE ===== */
+
+  /** Load subscriptions from localStorage; seed demo data if empty. */
   loadData() {
-    const stored = localStorage.getItem('subscriptions');
+    var stored = localStorage.getItem('subscriptions');
     if (stored) {
       this.subscriptions = JSON.parse(stored);
     } else {
+      // Demo seed data shown on first run
       this.subscriptions = [
-        { id: 1, name: 'Netflix', category: 'Streaming', cost: 54.90, renewalDate: '2025-06-01', status: 'active', notes: '' },
-        { id: 2, name: 'Spotify', category: 'Music', cost: 17.90, renewalDate: '2025-06-15', status: 'active', notes: '' },
-        { id: 3, name: 'iCloud 200GB', category: 'Storage', cost: 5.90, renewalDate: '2025-06-22', status: 'cancelled', notes: '' },
-        { id: 4, name: 'Adobe CC', category: 'Design', cost: 109.00, renewalDate: '2025-06-30', status: 'active', notes: '' }
+        { id: 1, name: 'Netflix',      category: 'Streaming', cost: 54.90,  renewalDate: '2025-06-01', status: 'active',    notes: '' },
+        { id: 2, name: 'Spotify',      category: 'Music',     cost: 17.90,  renewalDate: '2025-06-15', status: 'active',    notes: '' },
+        { id: 3, name: 'iCloud 200GB', category: 'Storage',   cost: 5.90,   renewalDate: '2025-06-22', status: 'cancelled', notes: '' },
+        { id: 4, name: 'Adobe CC',     category: 'Design',    cost: 109.00, renewalDate: '2025-06-30', status: 'active',    notes: '' }
       ];
       this.saveData();
     }
   }
 
+  /** Persist in-memory list to localStorage and refresh the stats row. */
   saveData() {
     localStorage.setItem('subscriptions', JSON.stringify(this.subscriptions));
     this.updateStats();
   }
 
+  /* ===== STAT CARDS ===== */
+
+  /** Recalculate and update the four summary stat cards. */
   updateStats() {
-    const activeSubs = this.subscriptions.filter(s => s.status === 'active');
-    const cancelledSubs = this.subscriptions.filter(s => s.status === 'cancelled');
-    const totalMonthly = activeSubs.reduce((sum, s) => sum + s.cost, 0);
-    
-    const today = new Date();
+    var active    = this.subscriptions.filter(function (s) { return s.status === 'active'; });
+    var cancelled = this.subscriptions.filter(function (s) { return s.status === 'cancelled'; });
+    var total     = active.reduce(function (sum, s) { return sum + s.cost; }, 0);
+
+    // Count active subs renewing within 7 days from today
+    var today = new Date();
     today.setHours(0, 0, 0, 0);
-    const renewingSoon = activeSubs.filter(s => {
-      const renewDate = new Date(s.renewalDate);
-      renewDate.setHours(0, 0, 0, 0);
-      const diffTime = renewDate - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays >= 0 && diffDays <= 7;
+    var renewingSoon = active.filter(function (s) {
+      var d    = new Date(s.renewalDate);
+      d.setHours(0, 0, 0, 0);
+      var diff = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
+      return diff >= 0 && diff <= 7;
     });
 
-    const totalMonthlyEl = document.getElementById('totalMonthly');
-    const activeCountEl = document.getElementById('activeCount');
-    const activeSubCountEl = document.getElementById('activeSubCount');
-    const cancelledCountEl = document.getElementById('cancelledCount');
-    const renewingSoonCountEl = document.getElementById('renewingSoonCount');
-
-    if (totalMonthlyEl) totalMonthlyEl.innerHTML = `RM ${totalMonthly.toFixed(2)}`;
-    if (activeCountEl) activeCountEl.innerHTML = activeSubs.length;
-    if (activeSubCountEl) activeSubCountEl.innerHTML = activeSubs.length;
-    if (cancelledCountEl) cancelledCountEl.innerHTML = cancelledSubs.length;
-    if (renewingSoonCountEl) renewingSoonCountEl.innerHTML = renewingSoon.length;
+    this.setText('totalMonthly',     'RM ' + total.toFixed(2));
+    this.setText('activeCount',      active.length);
+    this.setText('activeSubCount',   active.length);
+    this.setText('cancelledCount',   cancelled.length);
+    this.setText('renewingSoonCount', renewingSoon.length);
   }
 
+  /** Set innerHTML of an element by id (no-op if element not found). */
+  setText(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = value;
+  }
+
+  /* ===== CRUD OPERATIONS ===== */
+
+  /** Create a new subscription from form data. */
   createSubscription(formData) {
-    const newSubscription = {
-      id: Date.now(),
-      name: formData.name,
-      category: formData.category,
-      cost: parseFloat(formData.cost),
+    var newSub = {
+      id:          Date.now(),           // Simple unique id using timestamp
+      name:        formData.name,
+      category:    formData.category,
+      cost:        parseFloat(formData.cost),
       renewalDate: formData.renewalDate,
-      status: formData.status,
-      notes: formData.notes || ''
+      status:      formData.status,
+      notes:       formData.notes || ''
     };
-    this.subscriptions.push(newSubscription);
+    this.subscriptions.push(newSub);
     this.saveData();
     this.render();
-    this.showToast('Subscription added successfully!', 'success');
+    this.showToast('Subscription added!', 'success');
   }
 
+  /** Update an existing subscription by id. */
   updateSubscription(id, formData) {
-    const index = this.subscriptions.findIndex(sub => sub.id === id);
-    if (index !== -1) {
-      this.subscriptions[index] = {
-        id: id,
-        name: formData.name,
-        category: formData.category,
-        cost: parseFloat(formData.cost),
-        renewalDate: formData.renewalDate,
-        status: formData.status,
-        notes: formData.notes || ''
-      };
-      this.saveData();
-      this.render();
-      this.showToast('Subscription updated successfully!', 'success');  // 修复：加上 this.
-    }
+    var index = this.subscriptions.findIndex(function (s) { return s.id === id; });
+    if (index === -1) return;
+
+    this.subscriptions[index] = {
+      id:          id,
+      name:        formData.name,
+      category:    formData.category,
+      cost:        parseFloat(formData.cost),
+      renewalDate: formData.renewalDate,
+      status:      formData.status,
+      notes:       formData.notes || ''
+    };
+    this.saveData();
+    this.render();
+    this.showToast('Subscription updated!', 'success');
   }
 
+  /** Prompt for confirmation then delete a subscription by id. */
   deleteSubscription(id) {
-    const subscription = this.subscriptions.find(sub => sub.id === id);
-    if (!subscription) return;
-    
+    var sub = this.subscriptions.find(function (s) { return s.id === id; });
+    if (!sub) return;
+
     this.showConfirmDialog(
       'Are you sure you want to delete',
-      subscription.name,
+      sub.name,
       () => {
-        this.subscriptions = this.subscriptions.filter(sub => sub.id !== id);
+        this.subscriptions = this.subscriptions.filter(function (s) { return s.id !== id; });
         this.saveData();
         this.render();
-        this.showToast('Subscription deleted successfully!', 'success');
+        this.showToast('Subscription deleted.', 'success');
       }
     );
   }
 
-  // ========== 自定义通知 ==========
-  showToast(message, type = 'success') {
-    const existingToast = document.querySelector('.custom-toast');
-    if (existingToast) existingToast.remove();
-    
-    const toast = document.createElement('div');
-    toast.className = `custom-toast ${type}`;
-    
-    let icon = '';
-    if (type === 'success') icon = 'ti ti-circle-check';
-    else if (type === 'error') icon = 'ti ti-alert-circle';
-    else if (type === 'warning') icon = 'ti ti-alert-triangle';
-    else icon = 'ti ti-info-circle';
-    
-    toast.innerHTML = `
-      <i class="${icon}"></i>
-      <div class="toast-content">${message}</div>
-      <i class="ti ti-x toast-close"></i>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    toast.querySelector('.toast-close').onclick = () => {
-      toast.style.animation = 'slideOutRight 0.3s ease';
-      setTimeout(() => toast.remove(), 300);
-    };
-    
-    setTimeout(() => {
-      if (toast.parentNode) {
-        toast.style.animation = 'slideOutRight 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-      }
-    }, 3000);
-  }
+  /* ===== FILTERING & SEARCH ===== */
 
-  // ========== 自定义删除确认对话框 ==========
-  showConfirmDialog(message, subscriptionName, onConfirm) {
-    const existingDialog = document.querySelector('.custom-dialog-overlay');
-    if (existingDialog) existingDialog.remove();
-    
-    const overlay = document.createElement('div');
-    overlay.className = 'custom-dialog-overlay';
-    
-    overlay.innerHTML = `
-      <div class="custom-dialog">
-        <div class="custom-dialog-header">
-          <i class="ti ti-trash"></i>
-          <h3>Delete Subscription</h3>
-        </div>
-        <div class="custom-dialog-body">
-          ${message} <span class="subscription-name">"${subscriptionName}"</span> ?
-          <div style="margin-top: 8px; font-size: 12px; color: var(--mc-200);">This action cannot be undone.</div>
-        </div>
-        <div class="custom-dialog-footer">
-          <button class="dialog-cancel">Cancel</button>
-          <button class="dialog-confirm">Delete</button>
-        </div>
-      </div>
-    `;
-    
-    document.body.appendChild(overlay);
-    
-    overlay.querySelector('.dialog-cancel').onclick = () => {
-      overlay.remove();
-    };
-    
-    overlay.querySelector('.dialog-confirm').onclick = () => {
-      onConfirm();
-      overlay.remove();
-    };
-    
-    overlay.onclick = (e) => {
-      if (e.target === overlay) overlay.remove();
-    };
-    
-    const escHandler = (e) => {
-      if (e.key === 'Escape') {
-        overlay.remove();
-        document.removeEventListener('keydown', escHandler);
-      }
-    };
-    document.addEventListener('keydown', escHandler);
-  }
-
+  /** Return subscriptions filtered by current tab and search term, sorted by renewal date. */
   getFilteredSubscriptions() {
-    let filtered = [...this.subscriptions];
-    
-    if (this.currentFilter !== 'all') {
-      if (this.currentFilter === 'active') {
-        filtered = filtered.filter(sub => sub.status === 'active');
-      } else if (this.currentFilter === 'cancelled') {
-        filtered = filtered.filter(sub => sub.status === 'cancelled');
-      } else if (this.currentFilter === 'renewing-soon') {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        filtered = filtered.filter(sub => {
-          if (sub.status !== 'active') return false;
-          const renewDate = new Date(sub.renewalDate);
-          renewDate.setHours(0, 0, 0, 0);
-          const diffDays = Math.ceil((renewDate - today) / (1000 * 60 * 60 * 24));
-          return diffDays >= 0 && diffDays <= 7;
-        });
-      }
+    var result = this.subscriptions.slice();
+
+    // Tab filter
+    if (this.currentFilter === 'active') {
+      result = result.filter(function (s) { return s.status === 'active'; });
+    } else if (this.currentFilter === 'cancelled') {
+      result = result.filter(function (s) { return s.status === 'cancelled'; });
+    } else if (this.currentFilter === 'renewing-soon') {
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      result = result.filter(function (s) {
+        if (s.status !== 'active') return false;
+        var d    = new Date(s.renewalDate);
+        d.setHours(0, 0, 0, 0);
+        var diff = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
+        return diff >= 0 && diff <= 7;
+      });
     }
-    
+
+    // Search filter (name or category)
     if (this.searchTerm) {
-      const term = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(sub => 
-        sub.name.toLowerCase().includes(term) || 
-        sub.category.toLowerCase().includes(term)
-      );
+      var term = this.searchTerm.toLowerCase();
+      result = result.filter(function (s) {
+        return s.name.toLowerCase().includes(term) ||
+               s.category.toLowerCase().includes(term);
+      });
     }
-    
-    filtered.sort((a, b) => new Date(a.renewalDate) - new Date(b.renewalDate));
-    return filtered;
+
+    // Sort ascending by renewal date
+    result.sort(function (a, b) {
+      return new Date(a.renewalDate) - new Date(b.renewalDate);
+    });
+
+    return result;
   }
 
+  /* ===== RENDERING ===== */
+
+  /** Re-render the subscription table from the filtered list. */
   render() {
-    const container = document.getElementById('subscriptionsTable');
+    var container = document.getElementById('subscriptionsTable');
     if (!container) return;
-    
-    const filteredSubs = this.getFilteredSubscriptions();
-    
-    if (filteredSubs.length === 0) {
-      container.innerHTML = `<div style="text-align: center; padding: 60px; color: var(--mc-200);">No subscription data</div>`;
+
+    var list = this.getFilteredSubscriptions();
+
+    if (list.length === 0) {
+      container.innerHTML = '<div class="empty-state">No subscriptions found.</div>';
       return;
     }
-    
-    let html = `<div class="table-head">
-      <div class="th">Service</div>
-      <div class="th">Cost / mo</div>
-      <div class="th">Renewal Date</div>
-      <div class="th">Status</div>
-      <div class="th"></div>
-    </div>`;
-    
-    for (let sub of filteredSubs) {
-      const statusClass = sub.status === 'active' ? 'badge-active' : 'badge-cancelled';
-      const statusText = sub.status === 'active' ? 'Active' : 'Cancelled';
-      const icon = this.getIcon(sub.category);
-      
-      html += `<div class="table-row">
-        <div class="sub-name-wrap">
-          <div class="sub-icon"><i class="ti ${icon}"></i></div>
-          <div>
-            <div class="sub-name">${this.escapeHtml(sub.name)}</div>
-            <div class="sub-category">${sub.category}</div>
-          </div>
-        </div>
-        <div class="td">RM ${sub.cost.toFixed(2)}</div>
-        <div class="td">${this.formatDate(sub.renewalDate)}</div>
-        <div class="td" style="display: flex; align-items: center; justify-content: space-between;">
-          <span class="badge ${statusClass}">
-            <span class="badge-dot"></span>${statusText}
-          </span>
-          <button class="status-menu-btn" data-id="${sub.id}" style="background: #000000; border: 1px solid #555555; color: white; cursor: pointer; padding: 6px 12px; border-radius: 6px; margin-left: 10px;">
-            ⋮
-          </button>
-        </div>
-        <div class="row-actions">
-          <button class="icon-btn edit-btn" data-id="${sub.id}"><i class="ti ti-edit"></i></button>
-          <button class="icon-btn delete-btn" data-id="${sub.id}"><i class="ti ti-trash"></i></button>
-        </div>
-      </div>`;
-    }
-    
-    container.innerHTML = html;
-    this.attachButtonEvents();
-  }
 
-  getIcon(category) {
-    const icons = {
-      'Streaming': 'ti-device-tv',
-      'Music': 'ti-music',
-      'Storage': 'ti-cloud',
-      'Design': 'ti-brand-adobe',
-      'Productivity': 'ti-file-text',
-      'Other': 'ti-package'
-    };
-    return icons[category] || 'ti-receipt';
-  }
+    var rows = list.map((sub) => {
+      var badgeClass  = sub.status === 'active' ? 'badge-active' : 'badge-cancelled';
+      var statusLabel = sub.status === 'active' ? 'Active' : 'Cancelled';
+      var icon        = this.getCategoryIcon(sub.category);
 
-  formatDate(dateString) {
-    const date = new Date(dateString);
-    return `${date.getDate()} ${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`;
-  }
-
-  escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  attachButtonEvents() {
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        this.openEditModal(parseInt(btn.dataset.id));
-      };
+      return (
+        '<div class="table-row">' +
+          '<div class="sub-name-wrap">' +
+            '<div class="sub-icon"><i class="ti ' + icon + '"></i></div>' +
+            '<div>' +
+              '<div class="sub-name">' + this.escapeHtml(sub.name) + '</div>' +
+              '<div class="sub-category">' + sub.category + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="td">RM ' + sub.cost.toFixed(2) + '</div>' +
+          '<div class="td">' + this.formatDate(sub.renewalDate) + '</div>' +
+          '<div class="td" style="display:flex;align-items:center;">' +
+            '<span class="badge ' + badgeClass + '">' +
+              '<span class="badge-dot"></span>' + statusLabel +
+            '</span>' +
+            '<button class="status-menu-btn" data-id="' + sub.id + '">&#8942;</button>' +
+          '</div>' +
+          '<div class="row-actions">' +
+            '<button class="icon-btn edit-btn" data-id="' + sub.id + '" title="Edit">' +
+              '<i class="ti ti-edit"></i>' +
+            '</button>' +
+            '<button class="icon-btn delete-btn" data-id="' + sub.id + '" title="Delete">' +
+              '<i class="ti ti-trash"></i>' +
+            '</button>' +
+          '</div>' +
+        '</div>'
+      );
     });
-    
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        this.deleteSubscription(parseInt(btn.dataset.id));
-      };
+
+    container.innerHTML =
+      '<div class="table-head">' +
+        '<div class="th">Service</div>' +
+        '<div class="th">Cost / mo</div>' +
+        '<div class="th">Renewal Date</div>' +
+        '<div class="th">Status</div>' +
+        '<div class="th"></div>' +
+      '</div>' +
+      rows.join('');
+
+    this.attachRowEvents();
+  }
+
+  /** Attach click handlers to edit, delete, and three-dot buttons after render. */
+  attachRowEvents() {
+    document.querySelectorAll('.edit-btn').forEach((btn) => {
+      btn.onclick = (e) => { e.stopPropagation(); this.openEditModal(parseInt(btn.dataset.id)); };
     });
-    
-    document.querySelectorAll('.status-menu-btn').forEach(btn => {
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        const id = parseInt(btn.dataset.id);
-        this.showStatusMenu(e.target, id);
-      };
+
+    document.querySelectorAll('.delete-btn').forEach((btn) => {
+      btn.onclick = (e) => { e.stopPropagation(); this.deleteSubscription(parseInt(btn.dataset.id)); };
+    });
+
+    document.querySelectorAll('.status-menu-btn').forEach((btn) => {
+      btn.onclick = (e) => { e.stopPropagation(); this.showStatusMenu(btn, parseInt(btn.dataset.id)); };
     });
   }
 
-  showStatusMenu(element, id) {
-    const existingMenu = document.querySelector('.status-popup-menu');
-    if (existingMenu) existingMenu.remove();
-    
-    const rect = element.getBoundingClientRect();
-    
-    const menu = document.createElement('div');
+  /* ===== CONTEXT MENU (three-dot) ===== */
+
+  /** Show a small floating menu near the clicked button. */
+  showStatusMenu(triggerEl, id) {
+    // Remove any existing menu first
+    var existing = document.querySelector('.status-popup-menu');
+    if (existing) existing.remove();
+
+    var rect = triggerEl.getBoundingClientRect();
+    var menu = document.createElement('div');
     menu.className = 'status-popup-menu';
-    menu.style.cssText = `
-      position: fixed;
-      top: ${rect.bottom + 5}px;
-      left: ${rect.left}px;
-      background: #2d1e17;
-      border: 1px solid #5b3d2e;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      z-index: 1000;
-      min-width: 120px;
-      overflow: hidden;
-    `;
-    
-    menu.innerHTML = `
-      <div class="menu-item" data-action="edit" style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; cursor: pointer; color: #fadcb6; font-size: 13px;">
-        <i class="ti ti-edit"></i>
-        <span>Edit</span>
-      </div>
-      <div class="menu-item" data-action="delete" style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; cursor: pointer; color: #ef4444; font-size: 13px; border-top: 1px solid #5b3d2e;">
-        <i class="ti ti-trash"></i>
-        <span>Delete</span>
-      </div>
-    `;
-    
+    menu.style.top  = (rect.bottom + 5) + 'px';
+    menu.style.left = rect.left + 'px';
+
+    menu.innerHTML =
+      '<div class="menu-item" data-action="edit"><i class="ti ti-edit"></i><span>Edit</span></div>' +
+      '<div class="menu-item danger" data-action="delete"><i class="ti ti-trash"></i><span>Delete</span></div>';
+
     document.body.appendChild(menu);
-    
-    menu.querySelector('[data-action="edit"]').onclick = () => {
-      this.openEditModal(id);
-      menu.remove();
-    };
-    
-    menu.querySelector('[data-action="delete"]').onclick = () => {
-      this.deleteSubscription(id);
-      menu.remove();
-    };
-    
-    const closeMenu = (e) => {
-      if (!menu.contains(e.target) && e.target !== element) {
+
+    menu.querySelector('[data-action="edit"]').onclick   = () => { this.openEditModal(id); menu.remove(); };
+    menu.querySelector('[data-action="delete"]').onclick = () => { this.deleteSubscription(id); menu.remove(); };
+
+    // Close menu when clicking elsewhere
+    setTimeout(function () {
+      document.addEventListener('click', function handler() {
         menu.remove();
-        document.removeEventListener('click', closeMenu);
-      }
-    };
-    setTimeout(() => document.addEventListener('click', closeMenu), 0);
+        document.removeEventListener('click', handler);
+      });
+    }, 0);
   }
 
+  /* ===== MODAL ===== */
+
+  openModal() {
+    var overlay = document.getElementById('modalOverlay');
+    if (overlay) overlay.classList.add('is-open');
+  }
+
+  closeModal() {
+    var overlay = document.getElementById('modalOverlay');
+    if (overlay) overlay.classList.remove('is-open');
+    this.resetForm();
+  }
+
+  /** Pre-fill the modal form for editing an existing subscription. */
   openEditModal(id) {
-    const sub = this.subscriptions.find(s => s.id === id);
-    if (sub) {
-      document.getElementById('editId').value = sub.id;
-      document.getElementById('sub-name').value = sub.name;
-      document.getElementById('sub-cat').value = sub.category;
-      document.getElementById('sub-cost').value = sub.cost;
-      document.getElementById('sub-date').value = sub.renewalDate;
-      document.getElementById('sub-status').value = sub.status;
-      document.getElementById('sub-notes').value = sub.notes || '';
-      document.getElementById('modalTitle').textContent = 'Edit Subscription';
-      document.getElementById('saveBtn').textContent = 'Update Subscription';
-      this.openModal();
-    }
+    var sub = this.subscriptions.find(function (s) { return s.id === id; });
+    if (!sub) return;
+
+    document.getElementById('editId').value      = sub.id;
+    document.getElementById('sub-name').value    = sub.name;
+    document.getElementById('sub-cat').value     = sub.category;
+    document.getElementById('sub-cost').value    = sub.cost;
+    document.getElementById('sub-date').value    = sub.renewalDate;
+    document.getElementById('sub-status').value  = sub.status;
+    document.getElementById('sub-notes').value   = sub.notes || '';
+    document.getElementById('modalTitle').textContent = 'Edit Subscription';
+    document.getElementById('saveBtn').textContent    = 'Update Subscription';
+
+    this.openModal();
   }
 
+  /** Clear all form inputs and reset modal title to "Add". */
   resetForm() {
-    document.getElementById('editId').value = '';
-    document.getElementById('sub-name').value = '';
-    document.getElementById('sub-cat').value = '';
-    document.getElementById('sub-cost').value = '';
-    document.getElementById('sub-date').value = '';
-    document.getElementById('sub-status').value = 'active';
-    document.getElementById('sub-notes').value = '';
-    document.getElementById('modalTitle').textContent = 'Add Subscription';
-    document.getElementById('saveBtn').textContent = 'Add Subscription';
+    var fields = ['editId', 'sub-name', 'sub-cat', 'sub-cost', 'sub-date', 'sub-notes'];
+    fields.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    var statusEl = document.getElementById('sub-status');
+    if (statusEl) statusEl.value = 'active';
+
+    var titleEl = document.getElementById('modalTitle');
+    if (titleEl) titleEl.textContent = 'Add Subscription';
+    var saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) saveBtn.textContent = 'Add Subscription';
   }
 
+  /** Read all form values into a plain object. */
   getFormData() {
     return {
-      name: document.getElementById('sub-name').value.trim(),
-      category: document.getElementById('sub-cat').value,
-      cost: document.getElementById('sub-cost').value,
+      name:        document.getElementById('sub-name').value.trim(),
+      category:    document.getElementById('sub-cat').value,
+      cost:        document.getElementById('sub-cost').value,
       renewalDate: document.getElementById('sub-date').value,
-      status: document.getElementById('sub-status').value,
-      notes: document.getElementById('sub-notes').value.trim()
+      status:      document.getElementById('sub-status').value,
+      notes:       document.getElementById('sub-notes').value.trim()
     };
   }
 
+  /** Return false and show a toast if any required field is missing/invalid. */
   validateForm(data) {
-    if (!data.name) { this.showToast('Please enter service name', 'error'); return false; }
-    if (!data.category) { this.showToast('Please select a category', 'error'); return false; }
-    if (!data.cost || data.cost <= 0) { this.showToast('Please enter a valid cost', 'error'); return false; }
-    if (!data.renewalDate) { this.showToast('Please select a renewal date', 'error'); return false; }
+    if (!data.name)                { this.showToast('Please enter a service name.', 'error'); return false; }
+    if (!data.category)            { this.showToast('Please select a category.', 'error');    return false; }
+    if (!data.cost || data.cost <= 0) { this.showToast('Please enter a valid cost.', 'error');  return false; }
+    if (!data.renewalDate)         { this.showToast('Please select a renewal date.', 'error'); return false; }
     return true;
   }
 
+  /** Handle form submission for both create and update. */
   handleSubmit(e) {
     e.preventDefault();
-    const editId = document.getElementById('editId').value;
-    const formData = this.getFormData();
+    var editId   = document.getElementById('editId').value;
+    var formData = this.getFormData();
     if (!this.validateForm(formData)) return;
+
     if (editId) {
       this.updateSubscription(parseInt(editId), formData);
     } else {
@@ -443,88 +366,201 @@ class SubscriptionManager {
     this.closeModal();
   }
 
-  openModal() {
-    document.getElementById('modalOverlay').classList.add('is-open');
-  }
-
-  closeModal() {
-    document.getElementById('modalOverlay').classList.remove('is-open');
-    this.resetForm();
-  }
+  /* ===== EVENT BINDING ===== */
 
   bindEvents() {
-    const form = document.getElementById('subscriptionForm');
+    // Form submit
+    var form = document.getElementById('subscriptionForm');
     if (form) form.addEventListener('submit', (e) => this.handleSubmit(e));
-    
-    const openBtn = document.getElementById('openModalBtn');
+
+    // Open modal button
+    var openBtn = document.getElementById('openModalBtn');
     if (openBtn) openBtn.onclick = () => { this.resetForm(); this.openModal(); };
-    
-    const closeBtn = document.getElementById('closeModalBtn');
-    if (closeBtn) closeBtn.onclick = () => this.closeModal();
-    
-    const cancelBtn = document.getElementById('cancelModalBtn');
+
+    // Close / cancel buttons
+    var closeBtn  = document.getElementById('closeModalBtn');
+    var cancelBtn = document.getElementById('cancelModalBtn');
+    if (closeBtn)  closeBtn.onclick  = () => this.closeModal();
     if (cancelBtn) cancelBtn.onclick = () => this.closeModal();
-    
-    const overlay = document.getElementById('modalOverlay');
-    if (overlay) overlay.onclick = (e) => { if (e.target === overlay) this.closeModal(); };
-    
+
+    // Close on backdrop click
+    var overlay = document.getElementById('modalOverlay');
+    if (overlay) {
+      overlay.onclick = (e) => { if (e.target === overlay) this.closeModal(); };
+    }
+
+    // Close on Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        const overlay = document.getElementById('modalOverlay');
-        if (overlay && overlay.classList.contains('is-open')) this.closeModal();
+        var ov = document.getElementById('modalOverlay');
+        if (ov && ov.classList.contains('is-open')) this.closeModal();
       }
     });
-    
-    const searchInput = document.getElementById('searchInput');
+
+    // Search input with debounce
+    var searchInput = document.getElementById('searchInput');
     if (searchInput) {
-      let timeout;
+      var timer;
       searchInput.addEventListener('input', (e) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
           this.searchTerm = e.target.value;
           this.render();
         }, 300);
       });
     }
-    
-    const tabs = document.querySelectorAll('#filterTabs .tab');
-    tabs.forEach(tab => {
+
+    // Filter tabs
+    var tabs = document.querySelectorAll('#filterTabs .tab');
+    tabs.forEach((tab) => {
       tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
+        tabs.forEach(function (t) { t.classList.remove('active'); });
         tab.classList.add('active');
         this.currentFilter = tab.dataset.filter;
         this.render();
       });
     });
-    
-    const filterLinks = document.querySelectorAll('.filter-link');
-    filterLinks.forEach(link => {
+
+    // Sidebar filter links — sync with tabs
+    var filterLinks = document.querySelectorAll('.filter-link');
+    filterLinks.forEach((link) => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
-        const filter = link.dataset.filter;
-        this.currentFilter = filter;
-        const tabs = document.querySelectorAll('#filterTabs .tab');
-        tabs.forEach(tab => {
-          if (tab.dataset.filter === filter) {
-            tab.classList.add('active');
-          } else {
-            tab.classList.remove('active');
-          }
+        this.currentFilter = link.dataset.filter;
+        tabs.forEach(function (tab) {
+          tab.classList.toggle('active', tab.dataset.filter === link.dataset.filter);
         });
         this.render();
       });
     });
-    
-    const viewBtns = document.querySelectorAll('.vbtn');
-    viewBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        viewBtns.forEach(b => b.classList.remove('active'));
+
+    // View toggle (list / grid) — UI only for now
+    var viewBtns = document.querySelectorAll('.vbtn');
+    viewBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        viewBtns.forEach(function (b) { b.classList.remove('active'); });
         btn.classList.add('active');
       });
     });
   }
+
+  /* ===== UI HELPERS ===== */
+
+  /**
+   * Show a slide-in toast notification.
+   * @param {string} message
+   * @param {'success'|'error'|'warning'} type
+   */
+  showToast(message, type) {
+    type = type || 'success';
+
+    // Remove any existing toast first
+    var existing = document.querySelector('.custom-toast');
+    if (existing) existing.remove();
+
+    var iconMap = {
+      success: 'ti ti-circle-check',
+      error:   'ti ti-alert-circle',
+      warning: 'ti ti-alert-triangle'
+    };
+
+    var toast = document.createElement('div');
+    toast.className = 'custom-toast ' + type;
+    toast.innerHTML =
+      '<i class="' + (iconMap[type] || 'ti ti-info-circle') + '"></i>' +
+      '<div class="toast-content">' + message + '</div>' +
+      '<i class="ti ti-x toast-close"></i>';
+
+    document.body.appendChild(toast);
+
+    // Manual close
+    toast.querySelector('.toast-close').onclick = function () {
+      toast.style.animation = 'slideOutRight 0.3s ease';
+      setTimeout(function () { toast.remove(); }, 300);
+    };
+
+    // Auto-dismiss after 3 seconds
+    setTimeout(function () {
+      if (toast.parentNode) {
+        toast.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(function () { toast.remove(); }, 300);
+      }
+    }, 3000);
+  }
+
+  /**
+   * Show a custom confirm dialog before a destructive action.
+   * @param {string}   message          Body text before the name
+   * @param {string}   subscriptionName Name to highlight
+   * @param {Function} onConfirm        Called if user confirms
+   */
+  showConfirmDialog(message, subscriptionName, onConfirm) {
+    var existing = document.querySelector('.custom-dialog-overlay');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.className = 'custom-dialog-overlay';
+    overlay.innerHTML =
+      '<div class="custom-dialog">' +
+        '<div class="custom-dialog-header">' +
+          '<i class="ti ti-trash"></i>' +
+          '<h3>Delete Subscription</h3>' +
+        '</div>' +
+        '<div class="custom-dialog-body">' +
+          message + ' <span class="subscription-name">"' + subscriptionName + '"</span>?' +
+          '<span class="dialog-note">This action cannot be undone.</span>' +
+        '</div>' +
+        '<div class="custom-dialog-footer">' +
+          '<button class="dialog-cancel">Cancel</button>' +
+          '<button class="dialog-confirm">Delete</button>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('.dialog-cancel').onclick  = function () { overlay.remove(); };
+    overlay.querySelector('.dialog-confirm').onclick = function () { onConfirm(); overlay.remove(); };
+    overlay.onclick = function (e) { if (e.target === overlay) overlay.remove(); };
+
+    // Close on Escape
+    var escHandler = function (e) {
+      if (e.key === 'Escape') { overlay.remove(); document.removeEventListener('keydown', escHandler); }
+    };
+    document.addEventListener('keydown', escHandler);
+  }
+
+  /* ===== UTILITY ===== */
+
+  /** Map a category name to a Tabler icon class. */
+  getCategoryIcon(category) {
+    var map = {
+      'Streaming':   'ti-device-tv',
+      'Music':       'ti-music',
+      'Storage':     'ti-cloud',
+      'Design':      'ti-brand-adobe',
+      'Productivity':'ti-file-text',
+      'Other':       'ti-package'
+    };
+    return map[category] || 'ti-receipt';
+  }
+
+  /** Format a YYYY-MM-DD string to "1 Jun 2025". */
+  formatDate(dateStr) {
+    var d = new Date(dateStr);
+    return d.getDate() + ' ' +
+           d.toLocaleString('default', { month: 'short' }) + ' ' +
+           d.getFullYear();
+  }
+
+  /** Safely escape HTML to prevent XSS in dynamic content. */
+  escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+/* Instantiate once the DOM is ready */
+document.addEventListener('DOMContentLoaded', function () {
   window.subscriptionManager = new SubscriptionManager();
 });
