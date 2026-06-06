@@ -13,7 +13,7 @@ Subscriptify is a subscription tracker web application developed as part of the 
 | Kelvin | Product Owner & Developer | Backlog prioritisation, sprint scope decisions, UI shell, CSS system, codebase restructuring |
 | Wei Liang | Scrum Master & Developer | Sprint planning facilitation, Jira board management, authentication system, README |
 | Li Xian | Developer | Subscription CRUD system, localStorage data layer, form validation, bug fixes |
-
+s
 ---
 
 ## How to Run the Code
@@ -138,8 +138,8 @@ The team used a four-branch model.
 
 - `main` holds stable, tagged code. Nothing merges directly into `main` except `dev` at the end of a sprint.
 - `dev` is the shared integration branch. Feature branches are merged into `dev` and tested together before `dev` is merged into `main`.
-- `feature/login-register` covers all authentication work: registration, login, session guard, and the auth pages.
-- `feature/subscription-list` covers the subscription CRUD, dashboard UI, stat cards, filters, and all related CSS and JS.
+- `login-register` covers all authentication work: registration, login, session guard, and the auth pages.
+- `subscription-list` covers the subscription CRUD, dashboard UI, stat cards, filters, and all related CSS and JS.
 
 This model kept in-progress work off `main` at all times and gave the team a stable integration point in `dev` to catch conflicts before the sprint review.
 
@@ -147,40 +147,40 @@ This model kept in-progress work off `main` at all times and gave the team a sta
 
 | Issue | Assigned To | Status |
 |-------|-------------|--------|
-| Implement registration page and auth logic | Wei Liang | Closed |
-| Create README documentation | Wei Liang | Closed |
-| Build dashboard UI and stat cards | Kelvin | Closed |
-| Setup GitHub repository and branching strategy | Kelvin | Closed |
-| Build subscription CRUD class and localStorage layer | Li Xian | Closed |
-| Implement form validation with field-level toasts | Li Xian | Closed |
+| Added log in and register | Wei Liang | Closed |
+| Added logo to login page | Wei Liang | Closed |
+| UI improvement needed | Kelvin | Open |
+| Filtering is in dashboard rather than subscription table | Kelvin | Open |
+| Added syncronisation between dashboard and subscription list | Li Xian | Closed |
+| Validation error | Li Xian | Closed |
 
 ### Pull Requests & Code Reviews
 
 Each team member submitted at least 2 pull requests with review comments.
 
 **Kelvin's PRs:**
-- PR #1: `feature/subscription-list` → `dev` (Dashboard UI, sidebar, stat cards, CSS system — Sprint 1)
-- PR #2: `feature/subscription-list` → `dev` (Codebase restructure: modular JS and split CSS — Sprint 2)
+- PR #1: `subscription-list` → `dev` (Dashboard UI, sidebar, stat cards, CSS system — Sprint 1)
+- PR #2: `subscription-list` → `dev` (Codebase restructure: modular JS and split CSS — Sprint 2)
 
 **Wei Liang's PRs:**
-- PR #1: `feature/login-register` → `dev` (Login, registration, `auth.js`, `session.js`)
-- PR #2: `feature/login-register` → `dev` (Session guard fix and README update)
+- PR #1: `login-register` → `dev` (Login, registration, `auth.js`, `session.js`)
+- PR #2: `login-register` → `dev` (Session guard fix and README update)
 
 **Li Xian's PRs:**
-- PR #1: `feature/subscription-list` → `dev` (SubscriptionManager class, localStorage CRUD, stat card logic)
-- PR #2: `feature/subscription-list` → `dev` (Form validation toasts, status context menu fix)
+- PR #1: `subscription-list` → `dev` (SubscriptionManager class, localStorage CRUD, stat card logic)
+- PR #2: `subscription-list` → `dev` (Form validation toasts, status context menu fix)
 
 ### Release Tags
 
 | Tag | Sprint | Description |
 |-----|--------|-------------|
-| v0.1-iteration1 | Sprint 1 | Core subscription tracker with full CRUD and authentication |
-| v0.2-iteration2 | Sprint 2 | Refined codebase with improved validation and bug fixes |
+| iteration1 | Sprint 1 | Core subscription tracker with full CRUD and authentication |
+| iteration2 | Sprint 2 | Refined codebase with improved validation and bug fixes, added image to login page |
 
 ### Evidence of Collaboration
 
 - Regular commits from all 3 team members across both sprints
-- Four-branch model: `main`, `dev`, `feature/login-register`, `feature/subscription-list`
+- Four-branch model: `main`, `dev`, `login-register`, `subscription-list`
 - All feature branches merged into `dev` first; `dev` merged into `main` at sprint end
 - Pull requests with review comments before every merge
 - GitHub Issues created per member
@@ -261,25 +261,4 @@ task-tracker-kwl/
 ```
 
 ---
-
-## Assignment Requirements Checklist
-
-| Requirement | Status |
-|-------------|--------|
-| Chosen agile methodology with justification | Scrum with 2 sprints |
-| Minimum 6 user stories in backlog | 8 user stories |
-| Division of work into 2 iterations | Sprint 1 (core) and Sprint 2 (refinement) |
-| Iterative and incremental development evidence | Feature evolution table above |
-| GitHub repository with README | Done |
-| Branching strategy (main + dev + feature branches) | main, dev, feature/login-register, feature/subscription-list |
-| At least 2 GitHub issues per member | Done |
-| Regular commits from each member | Done |
-| At least 2 pull requests per member with review comments | Done |
-| GitHub Projects or Issues board | GitHub Issues + Jira Scrum board |
-| Feature implementation for 2 iterations | Done |
-| Release tags | v0.1-iteration1, v0.2-iteration2 |
-| Explanation of functionality evolution | Feature Evolution table above |
-
----
-
 *Developed for BAI21113 Software Engineering Assignment | Faculty of Computing*
