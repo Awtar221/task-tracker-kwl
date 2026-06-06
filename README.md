@@ -159,12 +159,12 @@ This model kept in-progress work off `main` at all times and gave the team a sta
 Each team member submitted at least 2 pull requests with review comments.
 
 **Kelvin's PRs:**
-- PR #1: `subscription-list` → `dev` (Dashboard UI, sidebar, stat cards, CSS system — Sprint 1)
-- PR #2: `subscription-list` → `dev` (Codebase restructure: modular JS and split CSS — Sprint 2)
+- PR #1: `dev` → `main` (Dashboard UI, sidebar, stat cards, CSS system, login, registration, subscription list — Sprint 1)
+- PR #2: `dev` → `main` (README update, validation update, logo added — Sprint 2)
 
 **Wei Liang's PRs:**
 - PR #1: `login-register` → `dev` (Login, registration, `auth.js`, `session.js`)
-- PR #2: `login-register` → `dev` (Session guard fix and README update)
+- PR #2: `login-register` → `dev` (README update)
 
 **Li Xian's PRs:**
 - PR #1: `subscription-list` → `dev` (SubscriptionManager class, localStorage CRUD, stat card logic)
