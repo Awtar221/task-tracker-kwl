@@ -13,7 +13,6 @@ Subscriptify is a subscription tracker web application developed as part of the 
 | Kelvin Singh (BAI_2009F-2505002) | Product Owner & Developer | Backlog prioritisation, sprint scope decisions, UI shell, CSS system, codebase restructuring |
 | Wei Liang (BIT_B2201F-2505006) | Scrum Master & Developer | Sprint planning facilitation, Jira board management, authentication system, README |
 | Li Xian (BIT_B2201F-2505005) | Developer | Subscription CRUD system, localStorage data layer, form validation, bug fixes |
-s
 ---
 
 ## How to Run the Code
