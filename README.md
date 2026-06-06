@@ -1,8 +1,8 @@
-# Subtrack - Feature Development with GitHub in an Agile SDLC
+# Subscriptify - Feature Development with GitHub in an Agile SDLC
 
 ## Project Overview
 
-Subtrack is a subscription tracker web application developed as part of the BAI21113 Software Engineering assignment. The application supports user registration, login, and subscription management. Development follows Scrum with 2 sprints and uses GitHub for version control and collaboration.
+Subscriptify is a subscription tracker web application developed as part of the BAI21113 Software Engineering assignment. The application supports user registration, login, and subscription management. Development follows Scrum with 2 sprints and uses GitHub for version control and collaboration.
 
 ---
 
@@ -26,7 +26,7 @@ Subtrack is a subscription tracker web application developed as part of the BAI2
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-repo/subtrack-kwl.git
+   git clone https://github.com/your-repo/Subscriptify-kwl.git
    ```
 
 2. **Open the project**
@@ -238,7 +238,7 @@ On first load, `simple_CRUD.js` seeds four demo subscriptions (Netflix, Spotify,
 ## Project Structure
 
 ```
-subtrack-kwl/
+task-tracker-kwl/
 ├── css/
 │   ├── base.css          # CSS variables, reset, global typography
 │   ├── layout.css        # App shell, sidebar, topbar, content area
