@@ -114,3 +114,15 @@
   color: var(--mc-50);
   text-decoration: underline;
 }
+
+.auth-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.auth-logo img {
+  width: 90px;
+  height: 90px;
+  border-radius: 16px;
+  object-fit: cover;
+}
