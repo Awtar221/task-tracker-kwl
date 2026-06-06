@@ -7,105 +7,22 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/tabler-icons.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <style>
-    .app-shell {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .sidebar, .topbar {
-      display: none;
-    }
-    .auth-card {
-      background: var(--mc-700);
-      border: 1px solid var(--mc-500);
-      border-radius: var(--radius-xl);
-      padding: 32px;
-      width: 100%;
-      max-width: 400px;
-      margin: 20px;
-    }
-    .auth-title {
-      font-family: var(--font-display);
-      font-size: 24px;
-      color: var(--mc-30);
-      margin-bottom: 8px;
-    }
-    .auth-sub {
-      font-size: 13px;
-      color: var(--mc-200);
-      margin-bottom: 24px;
-    }
-    .form-group {
-      margin-bottom: 20px;
-    }
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--mc-80);
-      margin-bottom: 6px;
-    }
-    .form-group input {
-      width: 100%;
-      background: var(--mc-800);
-      border: 1px solid var(--mc-500);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      font-size: 14px;
-      color: var(--mc-40);
-      outline: none;
-    }
-    .form-group input:focus {
-      border-color: var(--mc-80);
-    }
-    .btn-auth {
-      width: 100%;
-      background: var(--mc-50);
-      color: var(--mc-800);
-      border: none;
-      border-radius: var(--radius-md);
-      padding: 10px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-    .btn-auth:hover {
-      background: var(--mc-40);
-    }
-    .auth-footer {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 13px;
-      color: var(--mc-200);
-    }
-    .auth-footer a {
-      color: var(--mc-50);
-      text-decoration: none;
-    }
-    .error-msg {
-      color: #e06c75;
-      font-size: 12px;
-      margin-top: 8px;
-    }
-  </style>
+  <link rel="stylesheet" href="css/auth.css" />
 </head>
 <body>
+
 <div class="app-shell">
   <div class="auth-card">
     <div class="auth-title">Welcome back</div>
     <div class="auth-sub">Sign in to your account</div>
 
     <div class="form-group">
-      <label>Username</label>
+      <label for="loginUsername">Username</label>
       <input type="text" id="loginUsername" placeholder="Enter your username" />
     </div>
 
     <div class="form-group">
-      <label>Password</label>
+      <label for="loginPassword">Password</label>
       <input type="password" id="loginPassword" placeholder="Enter your password" />
     </div>
 
@@ -114,33 +31,14 @@
     <div class="auth-footer">
       Don't have an account? <a href="register.html">Create one</a>
     </div>
+
+    <!-- Feedback message injected by auth.js -->
     <div id="loginMessage"></div>
   </div>
 </div>
 
-<script>
-  const loginBtn = document.getElementById('loginBtn');
-  const msgDiv = document.getElementById('loginMessage');
+<!-- auth.js handles both login and register logic -->
+<script src="js/auth.js"></script>
 
-  loginBtn.addEventListener('click', function() {
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value;
-
-    if (!username || !password) {
-      msgDiv.innerHTML = '<div class="error-msg">❌ Please enter username and password</div>';
-      return;
-    }
-
-    const users = JSON.parse(localStorage.getItem('subtrack_users')) || [];
-    const user = users.find(u => u.username === username && u.password === password);
-
-    if (user) {
-      localStorage.setItem('subtrack_current_user', username);
-      window.location.href = 'index.html';
-    } else {
-      msgDiv.innerHTML = '<div class="error-msg">❌ Invalid username or password</div>';
-    }
-  });
-</script>
 </body>
 </html>

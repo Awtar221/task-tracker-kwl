@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Subtrack – Dashboard</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/tabler-icons.min.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/layout.css" />
@@ -16,7 +15,7 @@
 
 <div class="app-shell">
 
-  <!-- SIDEBAR -->
+  <!-- ===== SIDEBAR ===== -->
   <aside class="sidebar">
     <div class="logo">
       <div class="logo-text">Subtrack</div>
@@ -60,27 +59,27 @@
     </div>
 
     <div class="sidebar-footer">
-      <div class="user-pill" id="userPill">
+      <div class="user-pill">
         <div class="avatar"></div>
         <div class="user-info">
           <div class="user-name"></div>
           <div class="user-role">Free plan</div>
         </div>
-        <i class="ti ti-logout settings-icon" id="logoutBtn" style="cursor:pointer;"></i>
+        <!-- Logout button — wired up by session.js -->
+        <i class="ti ti-logout settings-icon" id="logoutBtn" title="Logout"></i>
       </div>
     </div>
   </aside>
 
-  <!-- MAIN -->
+  <!-- ===== MAIN ===== -->
   <main class="main-area">
 
-    <!-- TOPBAR -->
     <header class="topbar">
       <h1 class="page-title">Dashboard</h1>
       <div class="topbar-actions">
         <div class="search-box">
           <i class="ti ti-search"></i>
-          <input type="text" id="searchInput" placeholder="Search subscriptions..." style="background:transparent;border:none;color:var(--mc-40);outline:none;width:100%">
+          <input type="text" id="searchInput" placeholder="Search subscriptions..." />
         </div>
         <div class="view-toggle">
           <button class="vbtn active" data-view="list" title="List view"><i class="ti ti-list"></i></button>
@@ -93,10 +92,9 @@
       </div>
     </header>
 
-    <!-- CONTENT -->
     <div class="content">
 
-      <!-- STAT CARDS - Dynamic data -->
+      <!-- Stat cards — values populated by simple_CRUD.js -->
       <div class="summary-row">
         <div class="stat-card">
           <div class="stat-label">Total Monthly</div>
@@ -120,7 +118,7 @@
         </div>
       </div>
 
-      <!-- TABLE SECTION -->
+      <!-- Filter tabs + table -->
       <div class="section-header">
         <div class="section-title">All Subscriptions</div>
         <div class="filter-tabs" id="filterTabs">
@@ -130,18 +128,14 @@
         </div>
       </div>
 
-      <!-- Table container - dynamically generated -->
-      <div class="sub-table" id="subscriptionsTable"></div>
-      
-      <!-- Grid view container -->
-      <div id="gridView" style="display: none;"></div>
+      <!-- Table rendered dynamically by simple_CRUD.js -->
+      <div id="subscriptionsTable"></div>
 
     </div>
-    <!-- end content -->
   </main>
 </div>
 
-<!-- ADD/EDIT SUBSCRIPTION MODAL -->
+<!-- ===== ADD / EDIT MODAL ===== -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-header">
@@ -150,8 +144,9 @@
     </div>
 
     <form id="subscriptionForm">
-      <input type="hidden" id="editId" value="">
-      
+      <!-- Hidden field stores the id when editing an existing record -->
+      <input type="hidden" id="editId" value="" />
+
       <div class="form-field">
         <label class="field-label" for="sub-name">Service name</label>
         <input class="field-input" id="sub-name" type="text" placeholder="e.g. Netflix, Spotify..." required />
@@ -194,47 +189,6 @@
         <input class="field-input" id="sub-notes" type="text" placeholder="Any notes..." />
       </div>
 
-    <div class="modal-footer">
-      <button class="btn-secondary" id="cancelModalBtn">Cancel</button>
-      <button class="btn-primary" id="addSubBtn">Add Subscription</button>
-    </div>
-  </div>
-</div>
-
-<script src="js/modal.js"></script>
-
-<!-- Login check and user display -->
-<script>
-// 1. Check if the user is logged in
-const currentUser = localStorage.getItem('subtrack_current_user');
-if (!currentUser) {
-  window.location.href = 'login.html';
-}
-
-// 2. Display user info in the sidebar
-const userPill = document.getElementById('userPill');
-if (userPill && currentUser) {
-  const initials = currentUser.substring(0, 2).toUpperCase();
-  userPill.innerHTML = `
-    <div class="avatar">${initials}</div>
-    <div class="user-info">
-      <div class="user-name">${currentUser}</div>
-      <div class="user-role">Free plan</div>
-    </div>
-    <span id="logoutBtn" style="cursor:pointer; color:#e06c75; font-size:13px; margin-left:8px;">Logout</span>
-  `;
-
-  // 3. Logout functionality
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', function() {
-      localStorage.removeItem('subtrack_current_user');
-      window.location.href = 'login.html';
-    });
-  }
-}
-</script>
-
       <div class="modal-footer">
         <button type="button" class="btn-secondary" id="cancelModalBtn">Cancel</button>
         <button type="submit" class="btn-primary" id="saveBtn">Add Subscription</button>
@@ -243,6 +197,10 @@ if (userPill && currentUser) {
   </div>
 </div>
 
+<!-- session.js runs first: guards the page and sets user display -->
+<script src="js/session.js"></script>
+<!-- simple_CRUD.js handles all subscription logic and modal state -->
 <script src="js/simple_CRUD.js"></script>
+
 </body>
 </html>

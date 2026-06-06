@@ -1,0 +1,116 @@
+/* ======================
+   AUTH.CSS
+   Styles for login.html and register.html only.
+   Centers the auth card and hides the sidebar layout.
+   ====================== */
+
+/* Center the card in full viewport */
+.app-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* Auth card: the white-ish panel holding the form */
+.auth-card {
+  background: var(--mc-700);
+  border: 1px solid var(--mc-500);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  width: 100%;
+  max-width: 400px;
+  margin: 20px;
+}
+
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--mc-30);
+  margin-bottom: 8px;
+}
+
+.auth-sub {
+  font-size: 13px;
+  color: var(--mc-200);
+  margin-bottom: 24px;
+}
+
+/* Form group: label + input pair */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mc-80);
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  background: var(--mc-800);
+  border: 1px solid var(--mc-500);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--mc-40);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.form-group input:focus {
+  border-color: var(--mc-80);
+}
+
+/* Full-width submit button */
+.btn-auth {
+  width: 100%;
+  background: var(--mc-50);
+  color: var(--mc-800);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background var(--transition-fast);
+}
+
+.btn-auth:hover {
+  background: var(--mc-40);
+}
+
+/* Link row at bottom of form */
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--mc-200);
+}
+
+.auth-footer a {
+  color: var(--mc-50);
+  text-decoration: none;
+}
+
+/* Inline feedback messages */
+.error-msg {
+  color: #e06c75;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.success-msg {
+  color: #98c379;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.success-msg a {
+  color: var(--mc-50);
+  text-decoration: underline;
+}
