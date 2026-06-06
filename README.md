@@ -78,14 +78,14 @@ Day-to-day task tracking and sprint management was done in Jira. Each sprint had
 
 | Iteration | Stories Addressed | Focus | Tag |
 |-----------|------------------|-------|-----|
-| Sprint 1 | US-01 to US-08 | Core foundation, minimum viable product | v0.1-iteration1 |
-| Sprint 2 | US-01 to US-08 | Refinement, bug fixes, code restructuring | v0.2-iteration2 |
+| Sprint 1 | US-01 to US-08 | Core foundation, minimum viable product | iteration1 |
+| Sprint 2 | US-01 to US-08 | Refinement, bug fixes, code restructuring | iteration2 |
 
 Sprint 2 works from the same eight user stories. No new stories were added. The team used Sprint 2 to address quality gaps identified in the Sprint 1 review.
 
 ### What Was Delivered in Each Sprint
 
-**Sprint 1 (v0.1-iteration1) - Core Foundation**
+**Sprint 1 (iteration1) - Core Foundation**
 
 - Base UI with sidebar navigation, stat cards, and subscription table (`index.html`, `css/layout.css`, `css/components.css`)
 - User registration with localStorage-based credential storage — `subtrack_users` key (`register.html`, `js/auth.js`)
@@ -94,12 +94,13 @@ Sprint 2 works from the same eight user stories. No new stories were added. The 
 - Filter subscriptions by active or cancelled status via tabs and sidebar links
 - Dashboard stat cards: total monthly cost, active count, renewing soon count, cancelled count
 - Subscriptions stored under `subscriptions` key in localStorage
-
-**Sprint 2 (v0.2-iteration2) - Refinement and Bug Fixes**
-
-- Improved form validation with field-level error toasts for each missing input (`validateForm` in `simple_CRUD.js`)
 - Codebase restructured: inline scripts extracted into `auth.js`, `session.js`, `dropdown.js`, `modal.js`
 - CSS split into five focused files: `base.css`, `layout.css`, `components.css`, `modal.css`, `auth.css`
+
+**Sprint 2 (iteration2) - Refinement and Bug Fixes**
+
+- Improved form validation with field-level error toasts for each missing input (`validateForm` in `simple_CRUD.js`)
+
 - Fixed inconsistent sidebar filter behaviour that left stale results after switching filters
 - Fixed duplicate modal footer in `index.html`
 - Fixed status context menu (`showStatusMenu`) rendering and cleanup on outside click
@@ -108,15 +109,16 @@ Sprint 2 works from the same eight user stories. No new stories were added. The 
 
 ### Feature Evolution Between Sprints
 
-| Feature | Sprint 1 (v0.1-iteration1) | Sprint 2 (v0.2-iteration2) |
+| Feature | Sprint 1 (iteration1) | Sprint 2 (iteration2) |
 |---------|----------------------------|----------------------------|
-| Registration | Basic form with localStorage persistence | Same flow with field-level validation toasts |
-| Login | Login with session redirect | Same flow with improved error feedback |
-| Subscription CRUD | Functional via modal, inline scripts | Same functionality, logic moved to dedicated JS files |
+| Registration | Basic form with localStorage persistence | Same flow, no change |
+| Login | Login with session redirect | Same flow, no change |
+| Subscription CRUD | Functional via modal form | Bug fixes: sidebar filter, modal footer, status context menu |
+| Form Validation | Basic required-field check | Field-level error toasts for each missing input |
 | Status Filter | Working but inconsistent on repeat use | Fixed; renders correctly on every filter change |
-| Stat Cards | Correct calculations | No logic change; layout cleaned up |
-| Three-dot menu | Inline in HTML | Extracted into `dropdown.js` |
-| Codebase | Mixed inline and external scripts, single CSS file | Modular JS files, CSS split into five files |
+| Stat Cards | Correct calculations | No change |
+| Three-dot menu | Extracted into `dropdown.js` | No change |
+| Codebase | Modular JS files, CSS split into five files | No change |
 
 ---
 
@@ -127,10 +129,10 @@ Sprint 2 works from the same eight user stories. No new stories were added. The 
 ```
 main (stable, production-ready — merged from dev at end of each sprint)
   │
-  └── dev (integration branch — all feature branches merge here first)
+  └── dev (integration branch, Kelvin — all feature branches merge here first)
         │
         ├──  user-reg   (Wei Liang — login, registration, session guard)
-        └── subscription-list (Li Xian & Kelvin — CRUD, UI, dashboard)
+        └── subscription-list (Li Xian — CRUD, UI, dashboard)
 ```
 
 The team used a four-branch model.
